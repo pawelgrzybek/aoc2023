@@ -1,14 +1,23 @@
 use std::{env, fs};
 
+#[derive(Debug, Clone)]
+struct Card {
+    index: usize,
+    points: usize,
+    instances: usize,
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     let input = match args.get(1) {
         None => panic!("🚨 Please, pass a path to a file."),
         Some(p) => fs::read_to_string(p).unwrap(),
     };
-    let mut points: Vec<u32> = vec![];
 
-    for line in input.lines() {
+    let min_points: usize = 1;
+    let mut cards: Vec<Card> = vec![];
+
+    for (line_index, line) in input.lines().enumerate() {
         let numbers = line.split(": ").last().unwrap().split(" | ");
         let numbers_winning: Vec<i32> = numbers
             .clone()
@@ -28,10 +37,31 @@ fn main() {
             .iter()
             .filter(|&x| numbers_winning.contains(x))
             .count();
-        points.push(2u32.pow(numbers_same as u32) / 2);
+        let card = Card {
+            index: line_index,
+            points: numbers_same,
+            instances: 1,
+        };
+        cards.push(card);
     }
 
-    let result: u32 = points.iter().sum();
+    for index in 0..cards.len() {
+        let card = cards.get(index).unwrap().clone();
+        let Card {
+            index,
+            points,
+            instances: _,
+        } = card;
 
-    println!("Result: {:#?}", result);
+        if points.ge(&min_points) {
+            let index_start: usize = index + 1;
+            let index_stop: usize = index + card.points;
+            for winning_card in cards[index_start..=index_stop].iter_mut() {
+                winning_card.instances += card.instances;
+            }
+        }
+    }
+
+    let result: usize = cards.iter().map(|i| i.instances).sum();
+    println!("Cards: {:#?}", result)
 }
