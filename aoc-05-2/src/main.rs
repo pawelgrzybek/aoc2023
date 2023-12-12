@@ -4,19 +4,13 @@ use std::{env, fs, ops::Range};
 #[derive(Debug)]
 struct Mapper {
     source: Range<i64>,
-    destination: Range<i64>,
+    delta: i64,
 }
 
 fn resolve_mapping(map: &[Mapper], source_number: i64) -> i64 {
-    let ttt = map.iter().find(|i| i.source.contains(&source_number));
-    match ttt {
-        Some(Mapper {
-            source,
-            destination,
-        }) => destination
-            .clone()
-            .nth((source_number - source.start) as usize)
-            .unwrap(),
+    let mapper = map.iter().find(|i| i.source.contains(&source_number));
+    match mapper {
+        Some(Mapper { source: _, delta }) => source_number - delta,
         None => source_number,
     }
 }
@@ -80,7 +74,7 @@ fn main() {
 
                     let item = Mapper {
                         source: *source..source + lenght,
-                        destination: *destination..destination + lenght,
+                        delta: *source - *destination,
                     };
 
                     match prefix {

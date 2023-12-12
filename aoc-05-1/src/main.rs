@@ -8,8 +8,8 @@ struct Mapper {
 }
 
 fn resolve_mapping(map: &[Mapper], source_number: i64) -> i64 {
-    let ttt = map.iter().find(|i| i.source.contains(&source_number));
-    match ttt {
+    let mapping = map.iter().find(|i| i.source.contains(&source_number));
+    match mapping {
         Some(Mapper {
             source,
             destination,
