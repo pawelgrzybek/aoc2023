@@ -20,21 +20,22 @@ fn main() {
         ('A', 'a'),
         ('K', 'b'),
         ('Q', 'c'),
-        ('J', 'd'),
-        ('T', 'e'),
-        ('9', 'f'),
-        ('8', 'g'),
-        ('7', 'h'),
-        ('6', 'i'),
-        ('5', 'j'),
-        ('4', 'k'),
-        ('3', 'l'),
-        ('2', 'm'),
+        ('T', 'd'),
+        ('9', 'e'),
+        ('8', 'f'),
+        ('7', 'g'),
+        ('6', 'h'),
+        ('5', 'i'),
+        ('4', 'j'),
+        ('3', 'k'),
+        ('2', 'l'),
+        ('J', 'm'),
     ]);
     let mut hands = vec![];
 
     for line in input.lines() {
         let hand = line.split_whitespace().next().unwrap().to_string();
+        let jokers = hand.chars().filter(|&i| i == 'J').count() as i32;
         let bid = line
             .split_whitespace()
             .nth(1)
@@ -42,7 +43,11 @@ fn main() {
             .parse::<i32>()
             .unwrap();
 
-        let mut hand_type = hand.clone().chars().collect::<Vec<char>>();
+        let mut hand_type = hand
+            .clone()
+            .chars()
+            .filter(|&i| i != 'J')
+            .collect::<Vec<char>>();
         let mut hand_type_unique = HashSet::new();
         hand_type.retain(|x| hand_type_unique.insert(*x));
         let mut hand_typ_numeric = hand_type
@@ -53,7 +58,7 @@ fn main() {
         hand_typ_numeric.sort();
         hand_typ_numeric.reverse();
         hand_typ_numeric.resize(5, 0);
-        let hand_type = hand_typ_numeric.iter().fold(0, |acc, i| acc * 10 + i);
+        let hand_type = hand_typ_numeric.iter().fold(0, |acc, i| acc * 10 + i) + jokers * 10000;
         let hand_score = hand.chars().map(|i| points.get(&i).unwrap()).collect();
 
         hands.push(Hand {
